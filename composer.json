@@ -1,0 +1,13 @@
+{
+  "name": "pozitim/auth-client",
+  "type": "library",
+  "require": {
+    "guzzlehttp/guzzle": "6.1.1",
+    "psr/log": "1.0.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "Pozitim": "src/"
+    }
+  }
+}
