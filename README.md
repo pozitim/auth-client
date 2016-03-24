@@ -1,3 +1,12 @@
+# Kurulum
+
+composer.json dosyasındaki require bilgisine aşağıdaki satır eklenebilir:
+```
+"pozitim/auth-client": "1.0.0"
+```
+
+# Kullanım
+
 Turkcell oturum anahtarının elde edilmesi için SessionClientImpl ve SessionCacheClientImpl isimli sınıflar kullanılmalıdır.
 
 Memcache desteği olmadan SessionClientImpl aşağıdaki şekilde kullanılabilir:
