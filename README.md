@@ -2,7 +2,7 @@
 
 composer.json dosyasındaki require bilgisine aşağıdaki satır eklenebilir:
 ```
-"pozitim/auth-client": "1.0.0"
+"pozitim/auth-client": "1.1.0"
 ```
 
 # Kullanım
@@ -12,12 +12,14 @@ Turkcell oturum anahtarının elde edilmesi için SessionClientImpl ve SessionCa
 Memcache desteği olmadan SessionClientImpl aşağıdaki şekilde kullanılabilir:
 ```php
 $logger = new Logger();
-$sessionClient = new \Pozitim\AuthClient\Turkcell\SessionClientImpl($logger);
+$loggerListener = new \Pozitim\AuthClient\Turkcell\PsrLoggerListenerImpl($logger);
+$sessionClient = new \Pozitim\AuthClient\Turkcell\SessionClientImpl();
 $sessionClient->setApiEndpoint('http://auth.domain.com/api');
 $sessionClient->setTurkcellEndpoint(''); // API dökümanına göz atılabilir.
 $sessionClient->setServiceVariantId(123456);
 $sessionClient->setSpId(1234);
 $sessionClient->setPassword(12345678);
+$sessionClient->setListener($loggerListener);
 $sessionId = $sessionClient->getSessionId();
 ```
 

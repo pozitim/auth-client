@@ -4,7 +4,6 @@ namespace Pozitim\AuthClient\Turkcell;
 
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 
 class SessionClientImpl implements SessionClient
 {
@@ -21,22 +20,14 @@ class SessionClientImpl implements SessionClient
     protected $force = false;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @var Client
      */
     protected $guzzleClient;
 
     /**
-     * @param LoggerInterface $logger
+     * @var Listener
      */
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
+    protected $listener;
 
     /**
      * @return string
@@ -75,18 +66,24 @@ class SessionClientImpl implements SessionClient
                 )
                 ->then(
                     function (ResponseInterface $response) use ($object) {
-                        $this->getLogger()->info('Auth Response', array('body' => $response->getBody()->__toString()));
+                        if ($this->getListener() instanceof Listener) {
+                            $this->getListener()->onSuccess($response);
+                        }
                         if (in_array($response->getStatusCode(), array(200, 201))) {
                             $jsonObject = json_decode($response->getBody());
                             $this->sessionId = $jsonObject->sessionId;
                         }
                     },
                     function (\Exception $exception) use ($object) {
-                        $object->getLogger()->error($exception);
+                        if ($this->getListener() instanceof Listener) {
+                            $this->getListener()->onException($exception);
+                        }
                     }
                 )->wait();
         } catch (\Exception $exception) {
-            $this->getLogger()->error($exception);
+            if ($this->getListener() instanceof Listener) {
+                $this->getListener()->onException($exception);
+            }
         }
     }
 
@@ -131,11 +128,19 @@ class SessionClientImpl implements SessionClient
     }
 
     /**
-     * @return LoggerInterface
+     * @return Listener
      */
-    protected function getLogger()
+    public function getListener()
     {
-        return $this->logger;
+        return $this->listener;
+    }
+
+    /**
+     * @param Listener $listener
+     */
+    public function setListener(Listener $listener)
+    {
+        $this->listener = $listener;
     }
 
     /**
